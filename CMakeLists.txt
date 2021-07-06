@@ -13,6 +13,7 @@ include(GNUInstallDirs)
 include(ECMGeneratePkgConfigFile)
 
 option(INSTALL_SYSTEMD_UNITS "Install systemd unit files" ON)
+option(USE_SAILJAIL "Use sailjail sandboxing" ON)
 
 #
 # NOTE: For verbose build use VERBOSE=1

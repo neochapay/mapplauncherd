@@ -55,12 +55,14 @@
 
 #include "coverage.h"
 
+#ifdef USE_SAILJAIL
 #include "sailjail.h"
 
 static std::string basename(const std::string &str)
 {
     return str.substr(str.find_last_of("/") + 1);
 }
+#endif
 
 Booster::Booster() :
     m_appData(new AppData),
@@ -288,7 +290,7 @@ int Booster::run(SocketManager * socketManager)
             if (access(m_appData->fileName().c_str(), X_OK) != 0) {
                 throw std::runtime_error("Booster: Binary doesn't have execute permissions\n");
             }
-
+#ifdef USE_SAILJAIL
             if (boostedApplication() != "default") {
                 if (!sailjail_verify_launch(boostedApplication().c_str(), m_appData->argv()))
                     throw std::runtime_error("Booster: Binary doesn't have launch permissions\n");
@@ -299,7 +301,7 @@ int Booster::run(SocketManager * socketManager)
                 m_appData->prependArgv(SAILJAIL_PATH);
                 m_appData->setFileName(SAILJAIL_PATH);
             }
-
+#endif
             return launchProcess();
         } catch (const std::runtime_error &e) {
             Logger::logError("Booster: Failed to invoke: %s\n", e.what());
@@ -712,6 +714,7 @@ void Booster::resetOomAdj()
 
 std::string Booster::getFinalName(const std::string &name)
 {
+#ifdef USE_SAILJAIL
     if (name == SAILJAIL_PATH) {
         // This doesn't implement sailjail's parsing logic but instead
         // has some assumptions about the arguments:
@@ -738,6 +741,7 @@ std::string Booster::getFinalName(const std::string &name)
             }
         }
     }
+#endif
     return name;
 }
 

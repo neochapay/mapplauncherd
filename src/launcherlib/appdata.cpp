@@ -19,7 +19,9 @@
 
 #include "appdata.h"
 #include "protocol.h"
+#ifdef USE_SAILJAIL
 #include "sailjail.h"
+#endif
 #include <stdint.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -100,7 +102,7 @@ void AppData::setArgv(const char ** newArgv)
         m_argv[m_argc] = nullptr;
     }
 }
-
+#ifdef USE_SAILJAIL
 void AppData::prependArgv(const char * arg)
 {
     char **oldArgv = m_argv;
@@ -110,6 +112,7 @@ void AppData::prependArgv(const char * arg)
         m_argv[i] = oldArgv[i-1];
     free(oldArgv);
 }
+#endif
 
 const char ** AppData::argv() const
 {
@@ -253,10 +256,12 @@ void AppData::checkPrivileges()
      * It is skipped to avoid unintended consequenses when launching
      * other apps via sailjail.
      */
+#ifdef USE_SAILJAIL
     if (m_fileName == SAILJAIL_PATH) {
         m_privileges.clear();
         return;
     }
+#endif
 
     static const char *BOOSTER_APP_PRIVILEGES_LIST = "/usr/share/mapplauncherd/privileges";
     static const char *BOOSTER_APP_PRIVILEGES_DIR = "/usr/share/mapplauncherd/privileges.d";
